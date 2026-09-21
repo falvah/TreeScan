@@ -14,19 +14,31 @@ int main(int argc, char* argv[]) {
     treescan::Scanner scanner;
 
     try {
-        const treescan::ScanStats stats = scanner.scan(path);
+        const treescan::ScanResult result = scanner.scan(path);
 
         std::cout << "Scanning: " << path << "\n\n";
 
         std::cout << "Files:       "
-                  << stats.files << '\n';
+                  << result.stats.files << '\n';
 
         std::cout << "Directories: "
-                  << stats.directories << '\n';
+                  << result.stats.directories << '\n';
 
         std::cout << "Total size:  "
-                  << stats.totalSize
+                  << result.stats.totalSize
                   << " bytes\n";
+
+        std::cout << "\nFiles:\n";
+
+        for (const auto& file : result.files) {
+            std::cout
+                << file.name
+                << " | "
+                << file.extension
+                << " | "
+                << file.size
+                << " bytes\n";
+        }
     }
     catch (const std::exception& error) {
         std::cerr << "Error: "

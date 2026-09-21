@@ -5,7 +5,7 @@
 
 namespace treescan {
 
-ScanStats Scanner::scan(const std::filesystem::path& path) const {
+ScanResult Scanner::scan(const std::filesystem::path& path) const {
     if (!std::filesystem::exists(path)) {
         throw std::runtime_error("Path does not exist");
     }
@@ -14,7 +14,7 @@ ScanStats Scanner::scan(const std::filesystem::path& path) const {
         throw std::runtime_error("Path is not a directory");
     }
 
-    ScanStats stats;
+    ScanResult result;
 
     const auto options =
         std::filesystem::directory_options::skip_permission_denied;
@@ -25,22 +25,34 @@ ScanStats Scanner::scan(const std::filesystem::path& path) const {
         std::error_code error;
 
         if (entry.is_directory(error)) {
-            ++stats.directories;
+            ++result.stats.directories;
             continue;
         }
 
-        if (entry.is_regular_file(error)) {
-            ++stats.files;
-
-            const auto size = entry.file_size(error);
-
-            if (!error) {
-                stats.totalSize += size;
-            }
+        if (!entry.is_regular_file(error)) {
+            continue;
         }
+
+        const auto size = entry.file_size(error);
+
+        if (error) {
+            continue;
+        }
+
+        FileInfo file;
+
+        file.path = entry.path();
+        file.name = entry.path().filename().string();
+        file.extension = entry.path().extension().string();
+        file.size = size;
+
+        result.files.push_back(file);
+
+        ++result.stats.files;
+        result.stats.totalSize += size;
     }
 
-    return stats;
+    return result;
 }
 
 }

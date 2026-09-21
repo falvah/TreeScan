@@ -1,7 +1,10 @@
 #pragma once
 
+#include "treescan/FileInfo.hpp"
+
 #include <cstdint>
 #include <filesystem>
+#include <vector>
 
 namespace treescan {
 
@@ -11,9 +14,14 @@ struct ScanStats {
     std::uintmax_t totalSize = 0;
 };
 
+struct ScanResult {
+    ScanStats stats;
+    std::vector<FileInfo> files;
+};
+
 class Scanner {
 public:
-    ScanStats scan(const std::filesystem::path& path) const;
+    ScanResult scan(const std::filesystem::path& path) const;
 };
 
 }
