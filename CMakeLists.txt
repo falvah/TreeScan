@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(treescan
     src/main.cpp
     src/Scanner.cpp
+    src/Utils.cpp
 )
 
 target_include_directories(treescan
